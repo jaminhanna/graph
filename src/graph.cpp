@@ -237,6 +237,63 @@ std::vector<int> Graph::max_clique() const
 	return v;
 }
 
+bool Graph::is_vertex_cover(std::vector<int>& v) const
+{
+	int count;
+
+	count = 0;
+
+	size_t i;
+
+	for (i = 0; i < v.size(); ++i) {
+		count += vertices[v[i]].edges.size();
+	}
+
+	// if (!directed) count /= 2;
+	count /= 2; // assume undirected
+
+	return count == size;
+}
+
+std::vector<int> Graph::vertex_cover(int k) const
+{
+	size_t i;
+	int e, index;
+	int need, left;
+	std::vector<int> v;
+
+	v.push_back(-1);
+
+	while (!v.empty()) {
+
+		// for (i = 0; i < v.size(); ++i) {
+		// 	std::printf(" %d", v[i]);
+		// }
+		// std::printf("\n");
+
+		e = v.back();
+		v.pop_back();
+
+		if (v.size() == k) {
+			if (is_vertex_cover(v)) return v;
+		} else if (e == -1) {
+			if (v.empty()) v.push_back(0);
+			else v.push_back(v.back() + 1);
+			v.push_back(-1);
+		} else if (e + 1 < vertices.size()) {
+			need = k - (v.size() + 1);
+			left = vertices.size() - (e + 1) - 1;
+
+			if (need > left) continue;
+
+			v.push_back(e + 1);
+			v.push_back(-1);
+		}
+	}
+
+	return v;
+}
+
 void Graph::print() const
 {
 	std::printf("Graph G:\n");

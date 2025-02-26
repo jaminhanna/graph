@@ -54,5 +54,9 @@ public:
 
 	std::vector<int> max_clique() const;
 
+	bool is_vertex_cover(std::vector<int>& v) const;
+
+	std::vector<int> vertex_cover(int k) const;
+
 	void print() const;
 };
