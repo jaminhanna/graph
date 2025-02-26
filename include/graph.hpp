@@ -23,6 +23,7 @@ public:
 
 class Edge {
 	friend class Vertex;
+	friend class Graph;
 private:
 	int v;
 	int weight;
@@ -47,7 +48,7 @@ public:
 	    int weight = 1,
 	    bool directed = false);
 
-	bool clique(int k) const;
+	std::vector<int> clique(int k) const;
 
 	bool is_clique(std::vector<int>& v) const;
 

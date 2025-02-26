@@ -10,7 +10,13 @@ int main(int argc, char* argv[])
 
 	Graph g(argv[1]);
 
-	g.max_clique();
+	std::vector<int> v;
+
+	// g.print();
+
+	v = g.max_clique();
+
+	std::cout << "Size of maximum clique: " << v.size() << '\n';
 
 	return 0;
 }
