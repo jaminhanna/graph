@@ -1,3 +1,4 @@
+#include <cstdio>
 #include <iostream>
 #include <fstream>
 #include "graph.hpp"
@@ -17,15 +18,14 @@ void Vertex::add_edge(int v, int weight)
 
 void Vertex::print() const
 {
-	printf("\n");
-	printf("  Vertex %d:", id);
+	std::printf("    %d:", id);
 
 	size_t i;
 
 	for (i = 0; i < edges.size(); ++i) {
-		printf(" %d", edges[i].v);
+		std::printf(" %d", edges[i].v);
 	}
-	printf("\n");
+	std::printf("\n");
 }
 
 Edge::Edge(int v, int weight)
@@ -100,11 +100,52 @@ bool Graph::add_edge(
 	return true;
 }
 
+// returns whether the graph contains a
+// clique of size k
+
+bool Graph::clique(int k) const
+{
+	std::vector<int> f(10, 0);
+
+	f[0] = f[1] = f[2] = f[3] = f[4] = f[5] = f[6] = f[7] = 1;
+
+	return f[k];
+}
+
+// returns a vector of vertices comprising
+// a maximum clique in the graph
+
+std::vector<int> Graph::max_clique() const
+{
+	int start;
+	int size;
+	int k;
+
+	start = 0;
+	size = vertices.size();
+
+	while (size > 1) {
+		k = start + size / 2;
+		// std::printf("\t%d\t%d\t%d\n", start, k, start+size-1);
+		// std::printf("clique(k): %d\n", (int)clique(k));
+
+		if (clique(k)) {
+			start += size / 2;
+			size -= size / 2;
+		} else {
+			size /= 2;
+		}
+	}
+
+	return std::vector<int>();
+}
+
 void Graph::print() const
 {
-	printf("Graph G:\n");
-	printf("  Order: %d\n", order);
-	printf("  Size: %d\n", size);
+	std::printf("Graph G:\n");
+	std::printf("  Order: %d\n", order);
+	std::printf("  Size: %d\n", size);
+	std::printf("  Vertices:\n");
 
 	size_t i;
 

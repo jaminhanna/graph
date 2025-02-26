@@ -10,5 +10,7 @@ int main(int argc, char* argv[])
 
 	Graph g(argv[1]);
 
+	g.max_clique();
+
 	return 0;
 }

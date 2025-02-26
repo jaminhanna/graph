@@ -47,5 +47,9 @@ public:
 	    int weight = 1,
 	    bool directed = false);
 
+	bool clique(int k) const;
+
+	std::vector<int> max_clique() const;
+
 	void print() const;
 };
