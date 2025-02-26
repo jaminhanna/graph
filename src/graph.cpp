@@ -1,6 +1,7 @@
 #include <cstdio>
 #include <iostream>
 #include <fstream>
+#include <stack>
 #include "graph.hpp"
 
 Vertex::Vertex(int id)
@@ -105,11 +106,49 @@ bool Graph::add_edge(
 
 bool Graph::clique(int k) const
 {
-	std::vector<int> f(10, 0);
+	size_t i;
+	int e, index;
+	int need, left;
+	std::vector<int> v;
 
-	f[0] = f[1] = f[2] = f[3] = f[4] = f[5] = f[6] = f[7] = 1;
+	v.push_back(-1);
 
-	return f[k];
+	while (!v.empty()) {
+
+		// for (i = 0; i < v.size(); ++i) std::printf(" %d", v[i]);
+		// std::printf("\n");
+
+		e = v.back();
+		v.pop_back();
+
+		if (v.size() == k) {
+			if (is_clique(v)) return true;
+		} else if (e == -1) {
+			if (v.empty()) v.push_back(0);
+			else v.push_back(v.back() + 1);
+			v.push_back(-1);
+		} else if (e + 1 < vertices.size()) {
+			need = k - (v.size() + 1);
+			left = vertices.size() - (e + 1) - 1;
+
+			if (need > left) continue;
+
+			v.push_back(e + 1);
+			v.push_back(-1);
+		}
+	}
+
+	return false;
+}
+
+bool Graph::is_clique(std::vector<int>& v) const
+{
+	size_t i;
+
+	for (i = 0; i < v.size(); ++i) std::printf(" %d", v[i]);
+	std::printf("\n");
+
+	return false;
 }
 
 // returns a vector of vertices comprising

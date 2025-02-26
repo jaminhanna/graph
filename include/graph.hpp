@@ -49,6 +49,8 @@ public:
 
 	bool clique(int k) const;
 
+	bool is_clique(std::vector<int>& v) const;
+
 	std::vector<int> max_clique() const;
 
 	void print() const;
