@@ -32,31 +32,20 @@ public:
 };
 
 class Graph {
-private:
+public: // temporary
+// private:
 	int order;
 	int size;
+	const bool directed;
 
 	std::vector<Vertex> vertices;
 public:
-	Graph(const char* filename);
+	Graph(bool directed = false);
+	Graph(const char* filename, bool directed = false);
 
 	void add_vertex();
 
-	bool add_edge(
-	    int u,
-	    int v,
-	    int weight = 1,
-	    bool directed = false);
-
-	std::vector<int> clique(int k) const;
-
-	bool is_clique(std::vector<int>& v) const;
-
-	std::vector<int> max_clique() const;
-
-	bool is_vertex_cover(std::vector<int>& v) const;
-
-	std::vector<int> vertex_cover(int k) const;
+	bool add_edge(int u, int v, int weight = 1);
 
 	void print() const;
 };
