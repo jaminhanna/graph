@@ -1,49 +1,41 @@
 #include <vector>
+#include <map>
 
 class Edge;
 class Graph;
 
 class Vertex {
-	friend class Graph;
-private:
-	int id;
-
-	int in;
-	int out;
-	int deg;
-
-	std::vector<Edge> edges;
 public:
-	Vertex(int id);
+	const int id;
 
-	void add_edge(int v, int weight);
+	std::map<int, int> in;
+	std::map<int, int> out;
+
+	Vertex(int id);
 
 	void print() const;
 };
 
-class Edge {
-	friend class Vertex;
-	friend class Graph;
-private:
-	int v;
-	int weight;
-public:
-	Edge(int v, int weight = 1);
-};
+// class Edge {
+// public:
+// 	int v;
+// 	int weight;
+// 
+// 	Edge(int v, int weight = 1);
+// };
 
 class Graph {
-public: // temporary
-// private:
-	int order;
-	int size;
+public:
 	const bool directed;
 
-	std::vector<Vertex> vertices;
-public:
+	std::map<int, Vertex*> vertices;
+
 	Graph(bool directed = false);
 	Graph(const char* filename, bool directed = false);
 
-	void add_vertex();
+	~Graph();
+
+	bool add_vertex(int id);
 
 	bool add_edge(int u, int v, int weight = 1);
 

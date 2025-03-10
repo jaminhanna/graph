@@ -6,47 +6,37 @@
 Vertex::Vertex(int id)
     : id(id)
 {
-	in = 0;
-	out = 0;
-	deg = 0;
-}
-
-void Vertex::add_edge(int v, int weight)
-{
-	edges.push_back(Edge(v, weight));
 }
 
 void Vertex::print() const
 {
 	std::printf("    %d:", id);
 
-	size_t i;
+	std::map<int, int>::const_iterator it, beg, end;
 
-	for (i = 0; i < edges.size(); ++i) {
-		std::printf(" %d", edges[i].v);
+	beg = out.begin();
+	end = out.end();
+
+	for (it = beg; it != end; ++it) {
+		std::printf(" %d", it->first);
 	}
 	std::printf("\n");
 }
 
-Edge::Edge(int v, int weight)
-    : v(v),
-      weight(weight)
-{
-}
+// Edge::Edge(int v, int weight)
+//     : v(v),
+//       weight(weight)
+// {
+// }
 
 Graph::Graph(bool directed)
     : directed(directed)
 {
-	order = 0;
-	size = 0;
 }
 
 Graph::Graph(const char* filename, bool directed)
     : directed(directed)
 {
-	order = 0;
-	size = 0;
-
 	std::ifstream f(filename);
 
 	if (!f) {
@@ -63,7 +53,7 @@ Graph::Graph(const char* filename, bool directed)
 
 	int i;
 
-	for (i = 0; i < nnodes; ++i) add_vertex();
+	for (i = 0; i < nnodes; ++i) add_vertex(i);
 
 	int u, v;
 
@@ -78,41 +68,55 @@ Graph::Graph(const char* filename, bool directed)
 	f.close();
 }
 
-void Graph::add_vertex()
+Graph::~Graph()
 {
-	vertices.push_back(Vertex(vertices.size()));
-	++order;
+	std::map<int, Vertex*>::iterator it, beg, end;
+
+	beg = vertices.begin();
+	end = vertices.end();
+
+	for (it = beg; it != end; ++it) delete it->second;
+}
+
+bool Graph::add_vertex(int id)
+{
+	if (vertices.find(id) != vertices.end()) return false;
+
+	vertices[id] = new Vertex(id);
+
+	return true;
 }
 
 bool Graph::add_edge(int u, int v, int weight)
 {
-	if (u < 0 || u >= order) return false;
-	if (v < 0 || v >= order) return false;
+	if (vertices.find(u) == vertices.end()) return false;
+	if (vertices.find(v) == vertices.end()) return false;
 
-	vertices[u].add_edge(v, weight);
+	Vertex* a;
+	Vertex* b;
 
-	++vertices[u].out;
-	++vertices[u].deg;
+	a = vertices.find(u)->second;
+	b = vertices.find(v)->second;
 
-	++vertices[v].in;
-	++vertices[v].deg;
+	a->out[v] = weight;
+	b->in[u] = weight;
 
-	if (!directed) vertices[v].add_edge(u, weight);
-
-	++size;
+	if (!directed) {
+		b->out[u] = weight;
+		a->in[v] = weight;
+	}
 
 	return true;
 }
 void Graph::print() const
 {
 	std::printf("Graph G:\n");
-	std::printf("  Order: %d\n", order);
-	std::printf("  Size: %d\n", size);
 	std::printf("  Vertices:\n");
 
-	size_t i;
+	std::map<int, Vertex*>::const_iterator it, beg, end;
 
-	for (i = 0; i < vertices.size(); ++i) {
-		vertices[i].print();
-	}
+	beg = vertices.begin();
+	end = vertices.end();
+
+	for (it = beg; it != end; ++it) it->second->print();
 }
