@@ -1,6 +1,7 @@
 #include <cstdio>
 #include <iostream>
 #include <fstream>
+#include <set>
 #include "graph.hpp"
 
 Vertex::Vertex(int id)
@@ -119,4 +120,185 @@ void Graph::print() const
 	end = vertices.end();
 
 	for (it = beg; it != end; ++it) it->second->print();
+}
+
+void Graph::Kernighan_Lin()
+{
+	// partition the vertices into two
+	// sets a and b
+
+	size_t i, half;
+	std::set<int> a, b;
+	std::map<int, Vertex*>::iterator it, beg, end;
+
+	i = 0;
+	half = vertices.size() / 2;
+	beg = vertices.begin();
+	end = vertices.end();
+
+	for (it = beg; it != end; ++it) {
+		if (i < half) {
+			a.insert(it->first);
+			++i;
+		} else {
+			b.insert(it->first);
+		}
+	}
+
+	std::set<int>::iterator it2;
+
+	std::printf("a: {");
+	if (!a.empty()) {
+		it2 = a.begin();
+		std::printf(" %d", *it2);
+		for (++it2; it2 != a.end(); ++it2) {
+			std::printf(", %d", *it2);
+		}
+	}
+	std::printf(" }\n");
+
+	std::printf("b: {");
+	if (!b.empty()) {
+		it2 = b.begin();
+		std::printf(" %d", *it2);
+		for (++it2; it2 != b.end(); ++it2) {
+			std::printf(", %d", *it2);
+		}
+	}
+	std::printf(" }\n");
+
+	int to;
+	Vertex* v;
+	std::map<int, int>::iterator eit;
+
+	for (it2 = a.begin(); it2 != a.end(); ++it2) {
+		v = vertices[*it2];
+		eit = v->out.begin();
+		for (; eit != v->out.end(); ++eit) {
+			to = eit->first;
+			if (b.find(to) == b.end()) {
+				v->internal.insert(to);
+			} else {
+				v->external.insert(to);
+			}
+		}
+	}
+
+	for (it2 = b.begin(); it2 != b.end(); ++it2) {
+		v = vertices[*it2];
+		eit = v->out.begin();
+		for (; eit != v->out.end(); ++eit) {
+			to = eit->first;
+			if (a.find(to) == a.end()) {
+				v->internal.insert(to);
+			} else {
+				v->external.insert(to);
+			}
+		}
+	}
+
+	for (it = beg; it != end; ++it) {
+		v = it->second;
+
+		std::printf("%d: internal: {", v->id);
+		if (!v->internal.empty()) {
+			it2 = v->internal.begin();
+			std::printf(" %d", *it2);
+			for (++it2; it2 != v->internal.end(); ++it2) {
+				std::printf(", %d", *it2);
+			}
+		}
+		std::printf(" }\n");
+
+		std::printf("%d: external: {", v->id);
+		if (!v->external.empty()) {
+			it2 = v->external.begin();
+			std::printf(" %d", *it2);
+			for (++it2; it2 != v->external.end(); ++it2) {
+				std::printf(", %d", *it2);
+			}
+		}
+		std::printf(" }\n");
+	}
+
+	int gmax;
+
+	gmax = 0;
+
+	do {
+
+		std::vector<int> gv, av, bv;
+
+		for (i = 0; i < vertices.size() / 2; ++i) {
+
+			for (it = beg; it != end; ++it) {
+				v = it->second;
+				v->d = v->external.size() -
+				       v->internal.size();
+			}
+
+			int max;
+			Vertex* x;
+			Vertex* y;
+
+			max = 0;
+
+			it2 = a.begin();
+			for (; it2 != a.end(); ++it2) {
+
+				Vertex* u;
+				std::set<int>::iterator it3;
+
+				u = vertices[*it2];
+				it3 = b.begin();
+				for (; it3 != b.end(); ++it3) {
+
+					int g;
+
+					v = vertices[*it3];
+					g = u->d + v->d;
+					if (u->out.find(v->id) !=
+					    u->out.end()) {
+						g -= 2;
+					}
+					if (g > max) {
+						max = g;
+						x = u;
+						y = v;
+					}
+				}
+			}
+
+			std::printf("g: %d, u: %d, v: %d\n", max,
+			            x->id, y->id);
+
+			a.erase(x->id);
+			b.erase(y->id);
+
+			// not sure if things would break on
+			// self loops
+
+			for (it = beg; it != end; ++it) {
+				v = it->second;
+				// if (v == x || v == y) continue;
+				v->in.erase(x->id);
+				v->in.erase(y->id);
+				v->out.erase(x->id);
+				v->out.erase(y->id);
+			}
+
+			gv.push_back(max);
+			av.push_back(x->id);
+			bv.push_back(y->id);
+
+			size_t j;
+
+			for (j = 0; j < gv.size(); ++j) {
+				std::printf("g: %d, a: %d, b: %d\n",
+				            gv[i], av[i], bv[i]);
+			}
+		}
+
+		// find gmax
+	} while (gmax > 0);
 }

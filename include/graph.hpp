@@ -1,5 +1,6 @@
 #include <vector>
 #include <map>
+#include <set>
 
 class Edge;
 class Graph;
@@ -10,6 +11,14 @@ public:
 
 	std::map<int, int> in;
 	std::map<int, int> out;
+
+	// Kernighan-Lin
+
+	int d;
+	std::set<int> internal;
+	std::set<int> external;
+
+	// Kernighan-Lin
 
 	Vertex(int id);
 
@@ -38,6 +47,8 @@ public:
 	bool add_vertex(int id);
 
 	bool add_edge(int u, int v, int weight = 1);
+
+	void Kernighan_Lin();
 
 	void print() const;
 };
