@@ -15,6 +15,7 @@ public:
 	// Kernighan-Lin
 
 	int d;
+	int part;
 	std::set<int> internal;
 	std::set<int> external;
 

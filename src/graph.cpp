@@ -128,7 +128,6 @@ void Graph::Kernighan_Lin()
 	// sets a and b
 
 	size_t i, half;
-	std::set<int> a, b;
 	std::map<int, Vertex*>::iterator it, beg, end;
 
 	i = 0;
@@ -138,87 +137,11 @@ void Graph::Kernighan_Lin()
 
 	for (it = beg; it != end; ++it) {
 		if (i < half) {
-			a.insert(it->first);
+			it->second->part = 'a';
 			++i;
 		} else {
-			b.insert(it->first);
+			it->second->part = 'b';
 		}
-	}
-
-	std::set<int>::iterator it2;
-
-	std::printf("a: {");
-	if (!a.empty()) {
-		it2 = a.begin();
-		std::printf(" %d", *it2);
-		for (++it2; it2 != a.end(); ++it2) {
-			std::printf(", %d", *it2);
-		}
-	}
-	std::printf(" }\n");
-
-	std::printf("b: {");
-	if (!b.empty()) {
-		it2 = b.begin();
-		std::printf(" %d", *it2);
-		for (++it2; it2 != b.end(); ++it2) {
-			std::printf(", %d", *it2);
-		}
-	}
-	std::printf(" }\n");
-
-	int to;
-	Vertex* v;
-	std::map<int, int>::iterator eit;
-
-	for (it2 = a.begin(); it2 != a.end(); ++it2) {
-		v = vertices[*it2];
-		eit = v->out.begin();
-		for (; eit != v->out.end(); ++eit) {
-			to = eit->first;
-			if (b.find(to) == b.end()) {
-				v->internal.insert(to);
-			} else {
-				v->external.insert(to);
-			}
-		}
-	}
-
-	for (it2 = b.begin(); it2 != b.end(); ++it2) {
-		v = vertices[*it2];
-		eit = v->out.begin();
-		for (; eit != v->out.end(); ++eit) {
-			to = eit->first;
-			if (a.find(to) == a.end()) {
-				v->internal.insert(to);
-			} else {
-				v->external.insert(to);
-			}
-		}
-	}
-
-	for (it = beg; it != end; ++it) {
-		v = it->second;
-
-		std::printf("%d: internal: {", v->id);
-		if (!v->internal.empty()) {
-			it2 = v->internal.begin();
-			std::printf(" %d", *it2);
-			for (++it2; it2 != v->internal.end(); ++it2) {
-				std::printf(", %d", *it2);
-			}
-		}
-		std::printf(" }\n");
-
-		std::printf("%d: external: {", v->id);
-		if (!v->external.empty()) {
-			it2 = v->external.begin();
-			std::printf(" %d", *it2);
-			for (++it2; it2 != v->external.end(); ++it2) {
-				std::printf(", %d", *it2);
-			}
-		}
-		std::printf(" }\n");
 	}
 
 	int gmax;
@@ -226,6 +149,92 @@ void Graph::Kernighan_Lin()
 	gmax = 0;
 
 	do {
+		std::set<int> a, b;
+
+		for (it = beg; it != end; ++it) {
+			if (it->second->part == 'a') {
+				a.insert(it->first);
+			} else {
+				b.insert(it->first);
+			}
+		}
+
+		std::set<int>::iterator it2;
+
+		// std::printf("a: {");
+		// if (!a.empty()) {
+		// 	it2 = a.begin();
+		// 	std::printf(" %d", *it2);
+		// 	for (++it2; it2 != a.end(); ++it2) {
+		// 		std::printf(", %d", *it2);
+		// 	}
+		// }
+		// std::printf(" }\n");
+
+		// std::printf("b: {");
+		// if (!b.empty()) {
+		// 	it2 = b.begin();
+		// 	std::printf(" %d", *it2);
+		// 	for (++it2; it2 != b.end(); ++it2) {
+		// 		std::printf(", %d", *it2);
+		// 	}
+		// }
+		// std::printf(" }\n");
+
+		int to;
+		Vertex* u;
+		Vertex* v;
+		std::map<int, int>::iterator eit;
+
+		for (it2 = a.begin(); it2 != a.end(); ++it2) {
+			v = vertices[*it2];
+			eit = v->out.begin();
+			for (; eit != v->out.end(); ++eit) {
+				to = eit->first;
+				if (b.find(to) == b.end()) {
+					v->internal.insert(to);
+				} else {
+					v->external.insert(to);
+				}
+			}
+		}
+
+		for (it2 = b.begin(); it2 != b.end(); ++it2) {
+			v = vertices[*it2];
+			eit = v->out.begin();
+			for (; eit != v->out.end(); ++eit) {
+				to = eit->first;
+				if (a.find(to) == a.end()) {
+					v->internal.insert(to);
+				} else {
+					v->external.insert(to);
+				}
+			}
+		}
+
+		// for (it = beg; it != end; ++it) {
+		// 	v = it->second;
+
+		// 	std::printf("%d: internal: {", v->id);
+		// 	if (!v->internal.empty()) {
+		// 		it2 = v->internal.begin();
+		// 		std::printf(" %d", *it2);
+		// 		for (++it2; it2 != v->internal.end(); ++it2) {
+		// 			std::printf(", %d", *it2);
+		// 		}
+		// 	}
+		// 	std::printf(" }\n");
+
+		// 	std::printf("%d: external: {", v->id);
+		// 	if (!v->external.empty()) {
+		// 		it2 = v->external.begin();
+		// 		std::printf(" %d", *it2);
+		// 		for (++it2; it2 != v->external.end(); ++it2) {
+		// 			std::printf(", %d", *it2);
+		// 		}
+		// 	}
+		// 	std::printf(" }\n");
+		// }
 
 		std::vector<int> gv, av, bv;
 
@@ -242,11 +251,12 @@ void Graph::Kernighan_Lin()
 			Vertex* y;
 
 			max = 0;
+			x = NULL;
+			y = NULL;
 
 			it2 = a.begin();
 			for (; it2 != a.end(); ++it2) {
 
-				Vertex* u;
 				std::set<int>::iterator it3;
 
 				u = vertices[*it2];
@@ -269,6 +279,8 @@ void Graph::Kernighan_Lin()
 				}
 			}
 
+			if (max < 1) break;
+
 			std::printf("g: %d, u: %d, v: %d\n", max,
 			            x->id, y->id);
 
@@ -281,24 +293,56 @@ void Graph::Kernighan_Lin()
 			for (it = beg; it != end; ++it) {
 				v = it->second;
 				// if (v == x || v == y) continue;
-				v->in.erase(x->id);
-				v->in.erase(y->id);
-				v->out.erase(x->id);
-				v->out.erase(y->id);
+				v->internal.erase(x->id);
+				v->internal.erase(y->id);
+				v->external.erase(x->id);
+				v->external.erase(y->id);
 			}
 
 			gv.push_back(max);
 			av.push_back(x->id);
 			bv.push_back(y->id);
-
-			size_t j;
-
-			for (j = 0; j < gv.size(); ++j) {
-				std::printf("g: %d, a: %d, b: %d\n",
-				            gv[i], av[i], bv[i]);
-			}
 		}
 
-		// find gmax
-	} while (gmax > 0);
+		if (gv.empty()) {
+			std::printf("A: {");
+			if (!a.empty()) {
+				it2 = a.begin();
+				std::printf(" %d", *it2);
+				for (++it2; it2 != a.end(); ++it2) {
+					std::printf(", %d", *it2);
+				}
+				std::printf(" }\n");
+			}
+
+			std::printf("B: {");
+			if (!b.empty()) {
+				it2 = b.begin();
+				std::printf(" %d", *it2);
+				for (++it2; it2 != b.end(); ++it2) {
+					std::printf(", %d", *it2);
+				}
+				std::printf(" }\n");
+			}
+
+			return;
+		}
+
+		std::set<int> tmp;
+
+		for (i = 0; i < gv.size(); ++i) {
+			u = vertices[av[i]];
+			v = vertices[bv[i]];
+			u->part = 'b';
+			v->part = 'a';
+
+			tmp = std::move(u->internal);
+			u->internal = std::move(u->external);
+			u->external = std::move(tmp);
+
+			tmp = std::move(v->internal);
+			v->internal = std::move(v->external);
+			v->external = std::move(tmp);
+		}
+	} while (1);
 }
